@@ -6,6 +6,7 @@ import { useAppStore } from "@/lib/store";
 import { downloadBackup } from "@/lib/backup";
 import { Card, SectionLabel } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { InvestmentPolicyCard } from "@/components/settings/InvestmentPolicyCard";
 
 type Status = { type: "idle" } | { type: "ok"; message: string } | { type: "error"; message: string };
 
@@ -51,6 +52,9 @@ export default function SettingsPage() {
         </Link>
         <h1 className="text-lg font-semibold text-stone-100">設定</h1>
       </div>
+
+      <div className="space-y-4">
+      <InvestmentPolicyCard />
 
       <Card>
         <SectionLabel>バックアップ</SectionLabel>
@@ -98,6 +102,7 @@ export default function SettingsPage() {
           )}
         </div>
       </Card>
+      </div>
     </div>
   );
 }

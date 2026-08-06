@@ -13,6 +13,7 @@ import {
 } from "./db";
 import { importRakutenCsv, type CsvImportResult } from "./csvImport";
 import { restoreBackupFromFile } from "./backup";
+import { seedInitialDataIfEmpty } from "./seed";
 import type { Contribution, Fund, Settings, Snapshot } from "./types";
 
 type AppState = {
@@ -36,10 +37,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   funds: [],
   contributions: [],
   snapshots: [],
-  settings: { annualRate: 5, currentAge: null },
+  settings: {
+    annualRate: 5,
+    currentAge: null,
+    investmentStartMonth: null,
+    principles: [],
+    goal: "",
+  },
   loaded: false,
 
   load: async () => {
+    await seedInitialDataIfEmpty();
     const [funds, contributions, snapshots, settings] = await Promise.all([
       getFunds(),
       getContributions(),

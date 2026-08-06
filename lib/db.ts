@@ -26,7 +26,13 @@ interface TsumitateDB extends DBSchema {
 }
 
 const SETTINGS_KEY = "default";
-const DEFAULT_SETTINGS: Settings = { annualRate: 5, currentAge: null };
+const DEFAULT_SETTINGS: Settings = {
+  annualRate: 5,
+  currentAge: null,
+  investmentStartMonth: null,
+  principles: [],
+  goal: "",
+};
 
 let dbPromise: Promise<IDBPDatabase<TsumitateDB>> | null = null;
 
@@ -161,7 +167,7 @@ export async function deleteSnapshot(id: string): Promise<void> {
 export async function getSettings(): Promise<Settings> {
   const db = await getDb();
   const row = await db.get("settings", SETTINGS_KEY);
-  return row ?? DEFAULT_SETTINGS;
+  return row ? { ...DEFAULT_SETTINGS, ...row } : DEFAULT_SETTINGS;
 }
 
 export async function putSettings(settings: Settings): Promise<void> {
