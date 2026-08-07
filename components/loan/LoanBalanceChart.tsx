@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card, SectionLabel } from "@/components/ui/Card";
-import { formatYen } from "@/lib/format";
+import { formatYen, formatYenAxis } from "@/lib/format";
 import { buildBalanceChartData, currentChartPosition } from "@/lib/loan";
 import type { Loan } from "@/lib/types";
 
@@ -46,7 +46,7 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
       <SectionLabel>残高推移</SectionLabel>
       <div className="mt-3 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+          <LineChart data={data} margin={{ top: 24, right: 8, bottom: 0, left: -18 }}>
             <CartesianGrid stroke="#292524" vertical={false} />
             <XAxis
               dataKey="year"
@@ -61,7 +61,7 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
               tick={{ fill: "#78716c", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v) => `${Math.round(v / 10000)}万`}
+              tickFormatter={formatYenAxis}
               width={44}
             />
             <Tooltip content={<BalanceTooltip />} />
@@ -69,7 +69,12 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
               x={now.year}
               stroke="#E8B647"
               strokeDasharray="4 4"
-              label={{ value: "いまここ", position: "top", fill: "#E8B647", fontSize: 11 }}
+              label={{
+                value: "いまここ",
+                position: "insideTopLeft",
+                fill: "#E8B647",
+                fontSize: 11,
+              }}
             />
             <Line
               type="monotone"
