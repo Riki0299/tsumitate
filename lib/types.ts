@@ -43,3 +43,17 @@ export type Settings = {
   /** 投資の目標 */
   goal: string;
 };
+
+export type RepaymentType = "元利均等";
+
+export type Loan = {
+  /** 借入額（円） */
+  borrowedAmount: number;
+  /** 年利（%） */
+  annualRate: number;
+  /** 返済期間（年） */
+  years: number;
+  /** YYYY-MM (返済開始月) */
+  startMonth: string;
+  repaymentType: RepaymentType;
+};

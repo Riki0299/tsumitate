@@ -1,8 +1,8 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
-import type { Contribution, Fund, Settings, Snapshot } from "./types";
+import type { Contribution, Fund, Loan, Settings, Snapshot } from "./types";
 
 const DB_NAME = "tsumitate";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 interface TsumitateDB extends DBSchema {
   funds: {
@@ -23,6 +23,10 @@ interface TsumitateDB extends DBSchema {
     key: string;
     value: Settings;
   };
+  loan: {
+    key: string;
+    value: Loan;
+  };
 }
 
 const SETTINGS_KEY = "default";
@@ -34,28 +38,42 @@ const DEFAULT_SETTINGS: Settings = {
   goal: "",
 };
 
+const LOAN_KEY = "default";
+
 let dbPromise: Promise<IDBPDatabase<TsumitateDB>> | null = null;
 
 function getDb(): Promise<IDBPDatabase<TsumitateDB>> {
   if (!dbPromise) {
     dbPromise = openDB<TsumitateDB>(DB_NAME, DB_VERSION, {
       upgrade(db) {
-        db.createObjectStore("funds", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("funds")) {
+          db.createObjectStore("funds", { keyPath: "id" });
+        }
 
-        const contributions = db.createObjectStore("contributions", {
-          keyPath: "id",
-        });
-        contributions.createIndex("fundId", "fundId");
+        if (!db.objectStoreNames.contains("contributions")) {
+          const contributions = db.createObjectStore("contributions", {
+            keyPath: "id",
+          });
+          contributions.createIndex("fundId", "fundId");
+        }
 
-        const snapshots = db.createObjectStore("snapshots", {
-          keyPath: "id",
-        });
-        snapshots.createIndex("yearMonth", "yearMonth");
-        snapshots.createIndex("yearMonth_fundId", ["yearMonth", "fundId"], {
-          unique: true,
-        });
+        if (!db.objectStoreNames.contains("snapshots")) {
+          const snapshots = db.createObjectStore("snapshots", {
+            keyPath: "id",
+          });
+          snapshots.createIndex("yearMonth", "yearMonth");
+          snapshots.createIndex("yearMonth_fundId", ["yearMonth", "fundId"], {
+            unique: true,
+          });
+        }
 
-        db.createObjectStore("settings", { keyPath: "__key" });
+        if (!db.objectStoreNames.contains("settings")) {
+          db.createObjectStore("settings", { keyPath: "__key" });
+        }
+
+        if (!db.objectStoreNames.contains("loan")) {
+          db.createObjectStore("loan", { keyPath: "__key" });
+        }
       },
     });
   }
@@ -176,6 +194,21 @@ export async function putSettings(settings: Settings): Promise<void> {
 }
 
 /* ------------------------------------------------------------------ */
+/* loan                                                                 */
+/* ------------------------------------------------------------------ */
+
+export async function getLoan(): Promise<Loan | null> {
+  const db = await getDb();
+  const row = await db.get("loan", LOAN_KEY);
+  return row ?? null;
+}
+
+export async function putLoan(loan: Loan): Promise<void> {
+  const db = await getDb();
+  await db.put("loan", { ...loan, __key: LOAN_KEY } as never);
+}
+
+/* ------------------------------------------------------------------ */
 /* backup / restore                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -186,14 +219,16 @@ export type BackupData = {
   contributions: Contribution[];
   snapshots: Snapshot[];
   settings: Settings;
+  loan: Loan | null;
 };
 
 export async function exportAllData(): Promise<BackupData> {
-  const [funds, contributions, snapshots, settings] = await Promise.all([
+  const [funds, contributions, snapshots, settings, loan] = await Promise.all([
     getFunds(),
     getContributions(),
     getSnapshots(),
     getSettings(),
+    getLoan(),
   ]);
   return {
     version: 1,
@@ -202,13 +237,14 @@ export async function exportAllData(): Promise<BackupData> {
     contributions,
     snapshots,
     settings,
+    loan,
   };
 }
 
 export async function importAllData(data: BackupData): Promise<void> {
   const db = await getDb();
   const tx = db.transaction(
-    ["funds", "contributions", "snapshots", "settings"],
+    ["funds", "contributions", "snapshots", "settings", "loan"],
     "readwrite",
   );
   await Promise.all([
@@ -216,12 +252,16 @@ export async function importAllData(data: BackupData): Promise<void> {
     tx.objectStore("contributions").clear(),
     tx.objectStore("snapshots").clear(),
     tx.objectStore("settings").clear(),
+    tx.objectStore("loan").clear(),
   ]);
   await Promise.all([
     ...data.funds.map((f) => tx.objectStore("funds").put(f)),
     ...data.contributions.map((c) => tx.objectStore("contributions").put(c)),
     ...data.snapshots.map((s) => tx.objectStore("snapshots").put(s)),
     tx.objectStore("settings").put({ ...data.settings, __key: SETTINGS_KEY } as never),
+    ...(data.loan
+      ? [tx.objectStore("loan").put({ ...data.loan, __key: LOAN_KEY } as never)]
+      : []),
   ]);
   await tx.done;
 }

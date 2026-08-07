@@ -5,22 +5,25 @@ import {
   deleteContribution as dbDeleteContribution,
   getContributions,
   getFunds,
+  getLoan,
   getSettings,
   getSnapshots,
   putContribution,
+  putLoan,
   putSettings,
   upsertSnapshot,
 } from "./db";
 import { importRakutenCsv, type CsvImportResult } from "./csvImport";
 import { restoreBackupFromFile } from "./backup";
 import { seedInitialDataIfEmpty } from "./seed";
-import type { Contribution, Fund, Settings, Snapshot } from "./types";
+import type { Contribution, Fund, Loan, Settings, Snapshot } from "./types";
 
 type AppState = {
   funds: Fund[];
   contributions: Contribution[];
   snapshots: Snapshot[];
   settings: Settings;
+  loan: Loan | null;
   loaded: boolean;
   load: () => Promise<void>;
   addFund: (input: Omit<Fund, "id">) => Promise<Fund>;
@@ -30,6 +33,7 @@ type AppState = {
   importCsv: (text: string, filename: string) => Promise<CsvImportResult>;
   addManualSnapshot: (input: Omit<Snapshot, "id" | "source">) => Promise<void>;
   updateSettings: (partial: Partial<Settings>) => Promise<void>;
+  updateLoan: (loan: Loan) => Promise<void>;
   restoreBackup: (file: File) => Promise<void>;
 };
 
@@ -44,17 +48,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     principles: [],
     goal: "",
   },
+  loan: null,
   loaded: false,
 
   load: async () => {
     await seedInitialDataIfEmpty();
-    const [funds, contributions, snapshots, settings] = await Promise.all([
+    const [funds, contributions, snapshots, settings, loan] = await Promise.all([
       getFunds(),
       getContributions(),
       getSnapshots(),
       getSettings(),
+      getLoan(),
     ]);
-    set({ funds, contributions, snapshots, settings, loaded: true });
+    set({ funds, contributions, snapshots, settings, loan, loaded: true });
   },
 
   addFund: async (input) => {
@@ -96,6 +102,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     const next = { ...get().settings, ...partial };
     await putSettings(next);
     set({ settings: next });
+  },
+
+  updateLoan: async (loan) => {
+    await putLoan(loan);
+    set({ loan });
   },
 
   restoreBackup: async (file) => {

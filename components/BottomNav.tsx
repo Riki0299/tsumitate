@@ -61,6 +61,20 @@ const TABS: { href: string; label: string; icon: ReactNode }[] = [
       />
     ),
   },
+  {
+    href: "/loan",
+    label: "ローン",
+    icon: (
+      <path
+        d="M3 10.5 12 4l9 6.5M4 21V11h16v10M9 21v-6h6v6M4 21h16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    ),
+  },
 ];
 
 export default function BottomNav() {
