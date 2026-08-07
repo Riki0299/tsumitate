@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card, SectionLabel } from "@/components/ui/Card";
-import { formatYearMonthLabel, formatYearMonthShort, formatYen } from "@/lib/format";
+import { formatAxis, formatYearMonthLabel, formatYearMonthShort, formatYen } from "@/lib/format";
 import type { TrendPoint } from "@/lib/calculations";
 
 function TrendTooltip({
@@ -68,7 +68,7 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
               tick={{ fill: "#78716c", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v) => `${Math.round(v / 10000)}万`}
+              tickFormatter={formatAxis}
               width={44}
             />
             <Tooltip content={<TrendTooltip />} />

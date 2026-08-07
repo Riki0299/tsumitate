@@ -75,6 +75,20 @@ const TABS: { href: string; label: string; icon: ReactNode }[] = [
       />
     ),
   },
+  {
+    href: "/networth",
+    label: "純資産",
+    icon: (
+      <path
+        d="M4 12h16M8 12V7M12 12v5M16 12V9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    ),
+  },
 ];
 
 export default function BottomNav() {
@@ -96,10 +110,10 @@ export default function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px]"
+              className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] whitespace-nowrap"
               style={{ color: active ? "#E8B647" : "#78716c" }}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24">
+              <svg width="19" height="19" viewBox="0 0 24 24">
                 {tab.icon}
               </svg>
               <span>{tab.label}</span>

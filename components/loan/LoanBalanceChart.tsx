@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card, SectionLabel } from "@/components/ui/Card";
-import { formatYen, formatYenAxis } from "@/lib/format";
+import { formatAxis, formatYen } from "@/lib/format";
 import { buildBalanceChartData, currentChartPosition } from "@/lib/loan";
 import type { Loan } from "@/lib/types";
 
@@ -61,7 +61,7 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
               tick={{ fill: "#78716c", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={formatYenAxis}
+              tickFormatter={formatAxis}
               width={44}
             />
             <Tooltip content={<BalanceTooltip />} />

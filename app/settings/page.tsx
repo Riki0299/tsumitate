@@ -7,6 +7,7 @@ import { downloadBackup } from "@/lib/backup";
 import { Card, SectionLabel } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { InvestmentPolicyCard } from "@/components/settings/InvestmentPolicyCard";
+import { HouseValueCard } from "@/components/settings/HouseValueCard";
 
 type Status = { type: "idle" } | { type: "ok"; message: string } | { type: "error"; message: string };
 
@@ -55,6 +56,7 @@ export default function SettingsPage() {
 
       <div className="space-y-4">
       <InvestmentPolicyCard />
+      <HouseValueCard />
 
       <Card>
         <SectionLabel>バックアップ</SectionLabel>

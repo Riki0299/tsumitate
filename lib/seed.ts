@@ -71,5 +71,8 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
       "余剰資金で無理なく投資する",
     ],
     goal: "経済的自由と豊かな人生の実現",
+    houseInitialValue: null,
+    houseDepreciationRate: 1.5,
+    includeHouseValueInNetWorth: true,
   });
 }

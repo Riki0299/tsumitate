@@ -31,13 +31,14 @@ export function formatYearMonthShort(yearMonth: string): string {
  * グラフの軸ラベル用。桁に応じて単位を切り替える。
  * 1億以上 → "X.X億" / 1万以上 → "X,XXX万" / それ未満 → "XXXX"
  */
-export function formatYenAxis(amount: number): string {
-  const abs = Math.abs(amount);
-  if (abs >= 100_000_000) {
-    return `${(amount / 100_000_000).toFixed(1)}億`;
+export function formatAxis(v: number): string {
+  const n = Math.abs(v);
+  if (n === 0) return "0";
+  if (n >= 100000000) {
+    return `${(v / 100000000).toFixed(1)}億`;
   }
-  if (abs >= 10_000) {
-    return `${Math.round(amount / 10_000).toLocaleString("ja-JP")}万`;
+  if (n >= 10000) {
+    return `${Math.round(v / 10000).toLocaleString("ja-JP")}万`;
   }
-  return `${Math.round(amount).toLocaleString("ja-JP")}`;
+  return Math.round(v).toLocaleString("ja-JP");
 }

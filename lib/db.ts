@@ -36,6 +36,9 @@ const DEFAULT_SETTINGS: Settings = {
   investmentStartMonth: null,
   principles: [],
   goal: "",
+  houseInitialValue: null,
+  houseDepreciationRate: 1.5,
+  includeHouseValueInNetWorth: true,
 };
 
 const LOAN_KEY = "default";

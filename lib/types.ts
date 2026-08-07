@@ -42,6 +42,12 @@ export type Settings = {
   principles: string[];
   /** 投資の目標 */
   goal: string;
+  /** 住宅の初期評価額（円）未設定はnull */
+  houseInitialValue: number | null;
+  /** 住宅の想定減価率（年%） */
+  houseDepreciationRate: number;
+  /** 純資産に住宅評価額を含めるか */
+  includeHouseValueInNetWorth: boolean;
 };
 
 export type RepaymentType = "元利均等";

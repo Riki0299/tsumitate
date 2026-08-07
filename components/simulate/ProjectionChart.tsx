@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card, SectionLabel } from "@/components/ui/Card";
-import { formatYen } from "@/lib/format";
+import { formatAxis, formatYen } from "@/lib/format";
 import type { ProjectionPoint } from "@/lib/calculations";
 
 function ProjectionTooltip({
@@ -54,7 +54,7 @@ export function ProjectionChart({ data }: { data: ProjectionPoint[] }) {
               tick={{ fill: "#78716c", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v) => `${Math.round(v / 10000)}万`}
+              tickFormatter={formatAxis}
               width={44}
             />
             <Tooltip content={<ProjectionTooltip />} />
