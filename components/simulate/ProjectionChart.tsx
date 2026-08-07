@@ -41,7 +41,7 @@ export function ProjectionChart({ data }: { data: ProjectionPoint[] }) {
       <SectionLabel>伸び方</SectionLabel>
       <div className="mt-3 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+          <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <CartesianGrid stroke="#292524" vertical={false} />
             <XAxis
               dataKey="years"
@@ -55,7 +55,7 @@ export function ProjectionChart({ data }: { data: ProjectionPoint[] }) {
               axisLine={false}
               tickLine={false}
               tickFormatter={formatAxis}
-              width={44}
+              width={56}
             />
             <Tooltip content={<ProjectionTooltip />} />
             <Area

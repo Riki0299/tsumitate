@@ -46,7 +46,7 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
       <SectionLabel>残高推移</SectionLabel>
       <div className="mt-3 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 24, right: 8, bottom: 0, left: -18 }}>
+          <LineChart data={data} margin={{ top: 24, right: 8, bottom: 0, left: 0 }}>
             <CartesianGrid stroke="#292524" vertical={false} />
             <XAxis
               dataKey="year"
@@ -62,7 +62,7 @@ export function LoanBalanceChart({ loan }: { loan: Loan }) {
               axisLine={false}
               tickLine={false}
               tickFormatter={formatAxis}
-              width={44}
+              width={56}
             />
             <Tooltip content={<BalanceTooltip />} />
             <ReferenceLine

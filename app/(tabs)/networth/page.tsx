@@ -8,6 +8,7 @@ import {
   buildNetWorthChartData,
   buildNetWorthSeries,
   findNetWorthCrossover,
+  findNetWorthCrossoverPoint,
   type NetWorthCrossover,
 } from "@/lib/networth";
 import { Card, SectionLabel } from "@/components/ui/Card";
@@ -46,8 +47,10 @@ export default function NetWorthPage() {
   );
   const chartData = useMemo(() => buildNetWorthChartData(series), [series]);
   const crossover = useMemo(() => findNetWorthCrossover(series), [series]);
+  const crossoverPoint = useMemo(() => findNetWorthCrossoverPoint(series), [series]);
   const current = series[0];
   const currentNetWorth = current?.netWorth ?? 0;
+  const showHouse = settings.includeHouseValueInNetWorth && settings.houseInitialValue != null;
 
   if (!loaded) {
     return <div className="py-20 text-center text-sm text-stone-500">読み込み中...</div>;
@@ -83,7 +86,7 @@ export default function NetWorthPage() {
         </div>
         <div className="mt-2 text-[11px] text-stone-500">
           積立資産 {formatYen(current?.savings ?? 0)}
-          {settings.includeHouseValueInNetWorth && current?.houseValue != null
+          {showHouse && current?.houseValue != null
             ? ` ・ 住宅評価額 ${formatYen(current.houseValue)}`
             : ""}
           {" ・ "}ローン残高 {formatYen(current?.loanBalance ?? 0)}
@@ -95,7 +98,7 @@ export default function NetWorthPage() {
         <div className="mt-1 text-sm text-stone-100">{crossoverText(crossover)}</div>
       </Card>
 
-      <NetWorthChart data={chartData} showHouse={settings.includeHouseValueInNetWorth} />
+      <NetWorthChart data={chartData} showHouse={showHouse} crossoverPoint={crossoverPoint} />
 
       <ContributionSlider amount={monthlyContribution} onChange={setMonthlyContribution} />
 

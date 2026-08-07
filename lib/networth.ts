@@ -75,10 +75,8 @@ export type NetWorthChartPoint = {
   yearMonth: string;
   savings: number;
   houseValue: number;
-  /** ローン残高（正の値、ツールチップ表示用） */
+  /** ローン残高（正の値） */
   loanBalance: number;
-  /** グラフ描画用にマイナス側へ反転したローン残高 */
-  loanBalanceNeg: number;
   netWorth: number;
 };
 
@@ -96,7 +94,6 @@ export function buildNetWorthChartData(series: NetWorthPoint[]): NetWorthChartPo
       savings: p.savings,
       houseValue: p.houseValue ?? 0,
       loanBalance: p.loanBalance,
-      loanBalanceNeg: -p.loanBalance,
       netWorth: p.netWorth,
     });
   }
@@ -125,4 +122,22 @@ export function findNetWorthCrossover(series: NetWorthPoint[]): NetWorthCrossove
     }
   }
   return { type: "never" };
+}
+
+/** 純資産がゼロを跨ぐ瞬間の、グラフ上の座標（経過年数・その時点のローン残高=資産評価額） */
+export type NetWorthCrossoverPoint = { year: number; value: number };
+
+export function findNetWorthCrossoverPoint(series: NetWorthPoint[]): NetWorthCrossoverPoint | null {
+  for (let i = 1; i < series.length; i++) {
+    const prev = series[i - 1];
+    const curr = series[i];
+    if (prev.netWorth < 0 && curr.netWorth >= 0) {
+      const span = curr.netWorth - prev.netWorth;
+      const t = span === 0 ? 0 : -prev.netWorth / span;
+      const monthsFromNow = prev.monthsFromNow + t * (curr.monthsFromNow - prev.monthsFromNow);
+      const loanBalance = prev.loanBalance + t * (curr.loanBalance - prev.loanBalance);
+      return { year: monthsFromNow / 12, value: loanBalance };
+    }
+  }
+  return null;
 }
